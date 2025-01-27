@@ -1,8 +1,11 @@
+import json
 from uuid import uuid4
 
+import requests
 from fastapi import Depends, Query, APIRouter
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from imei_api.core.config import settings
 from imei_api.core.db import get_async_session
 from imei_api.crud import user_crud
 from imei_api.models import User  # noqa
@@ -35,3 +38,20 @@ async def check_imei(
 ):
     await check_token_exists(session, token)
     imei = await check_imei_correct(imei)
+
+    payload = json.dumps({
+        "deviceId": imei,
+        "serviceId": settings.imei_check_service_id
+    })
+    headers = {
+        'Authorization': f'Bearer {settings.token_api_sandbox}',
+        'Accept-Language': 'en',
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.request(
+        "POST",
+        url=settings.imei_check_url,
+        headers=headers, data=payload)
+    print(response.text)
+    return response.json()
