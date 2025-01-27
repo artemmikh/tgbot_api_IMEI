@@ -3,7 +3,7 @@ from typing import Optional, Dict
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from api.models import User
+from imei_api.models import User
 
 
 class CRUDUser:

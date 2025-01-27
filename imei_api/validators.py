@@ -4,7 +4,7 @@ import re
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.crud import user_crud
+from imei_api.crud import user_crud
 
 
 async def check_username_exists(session: AsyncSession, username):

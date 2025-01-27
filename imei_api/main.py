@@ -1,0 +1,40 @@
+import asyncio
+
+import uvicorn
+from fastapi import APIRouter
+from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
+
+from api import router as api_router
+from imei_api.core.config import settings
+from imei_api.core.db import engine, Base
+from imei_api.models import User  # noqa
+
+main_router = APIRouter()
+main_router.include_router(
+    api_router,
+    prefix='/api',
+    tags=['API']
+)
+app = FastAPI(
+    title=settings.app_title,
+    description=settings.description
+)
+
+app.include_router(main_router)
+
+
+@app.get('/')
+def redirect_to_swagger() -> RedirectResponse:
+    return RedirectResponse(url='/docs')
+
+
+async def create_tables() -> None:
+    """Создает таблицы в базе данных."""
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+
+if __name__ == '__main__':
+    asyncio.run(create_tables())
+    uvicorn.run('main:app', reload=True)

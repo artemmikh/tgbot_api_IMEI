@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String
 
-from api.core.db import Base
+from imei_api.core.db import Base
 
 
 class User(Base):
