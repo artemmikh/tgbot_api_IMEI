@@ -28,5 +28,13 @@ class CRUDUser:
         )
         return user.scalars().first()
 
+    async def get_user_by_token(
+            self, session: AsyncSession, token: str) -> Optional[User]:
+        """Получить объект пользователя по токену."""
+        user = await session.execute(
+            select(User).where(User.token == token)
+        )
+        return user.scalars().first()
+
 
 user_crud = CRUDUser(User)
