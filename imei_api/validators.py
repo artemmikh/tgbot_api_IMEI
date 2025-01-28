@@ -1,5 +1,5 @@
-from http import HTTPStatus
 import re
+from http import HTTPStatus
 
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession

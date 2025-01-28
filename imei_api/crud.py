@@ -1,7 +1,7 @@
 from typing import Optional, Dict
 
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from imei_api.models import User
 
