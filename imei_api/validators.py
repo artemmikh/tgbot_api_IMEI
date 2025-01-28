@@ -8,15 +8,27 @@ from imei_api.crud import user_crud
 from imei_api.models import User
 
 
-async def check_username_exists(
+async def check_username_not_exists(
         session: AsyncSession, username) -> None or HTTPException:
-    """Проверяет, существует ли пользователь с переданным именем в базе."""
+    """Проверяет, что пользователь с переданным именем не существует в базе."""
     user = await user_crud.get_user_obj_by_name(session, username)
     if user is not None:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
             detail='Пользователь с таким username уже существует!',
         )
+
+
+async def check_username_exists(
+        session: AsyncSession, username) -> User or HTTPException:
+    """Проверяет, что пользователь с переданным именем существует в базе."""
+    user = await user_crud.get_user_obj_by_name(session, username)
+    if user is None:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND,
+            detail='Пользователь с таким username не найден!',
+        )
+    return user
 
 
 async def check_tg_username_exists(

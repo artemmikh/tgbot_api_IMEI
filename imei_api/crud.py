@@ -1,5 +1,6 @@
 from typing import Optional, Dict
 
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -43,6 +44,25 @@ class CRUDUser:
             select(User).where(User.tg_username == tg_username)
         )
         return user.scalars().first()
+
+    async def update(
+            self,
+            db_obj,
+            obj_in: Dict,
+            session: AsyncSession,
+    ):
+        """Обновить объект в базе данных."""
+        obj_data = jsonable_encoder(db_obj)
+        update_data = obj_in
+
+        for field in obj_data:
+            if field in update_data:
+                setattr(db_obj, field,
+                        update_data[field])
+        session.add(db_obj)
+        await session.commit()
+        await session.refresh(db_obj)
+        return db_obj
 
 
 user_crud = CRUDUser(User)
