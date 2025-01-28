@@ -19,6 +19,17 @@ async def check_username_exists(
         )
 
 
+async def check_tg_username_exists(
+        session: AsyncSession, username) -> None or HTTPException:
+    """Проверяет, существует ли телеграм username в базе."""
+    user = await user_crud.get_user_obj_by_tg_username(session, username)
+    if user is not None:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail='Пользователь с таким телеграмом уже существует!',
+        )
+
+
 async def check_imei_correct(imei: str) -> str or HTTPException:
     """Убирает пробелы из imei и проверяет, что длина imei равна 15 цифрам."""
     imei: str = imei.replace(' ', '')

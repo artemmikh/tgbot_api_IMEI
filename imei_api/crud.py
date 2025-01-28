@@ -36,5 +36,13 @@ class CRUDUser:
         )
         return user.scalars().first()
 
+    async def get_user_obj_by_tg_username(
+            self, session: AsyncSession, tg_username: str) -> Optional[User]:
+        """Получить объект пользователя по телеграм username."""
+        user = await session.execute(
+            select(User).where(User.tg_username == tg_username)
+        )
+        return user.scalars().first()
+
 
 user_crud = CRUDUser(User)
