@@ -26,6 +26,7 @@ app.include_router(main_router)
 
 @app.get('/')
 def redirect_to_swagger() -> RedirectResponse:
+    """Перенаправляет с главной на документацию."""
     return RedirectResponse(url='/docs')
 
 

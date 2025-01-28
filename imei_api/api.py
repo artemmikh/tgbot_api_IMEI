@@ -20,6 +20,7 @@ router = APIRouter()
 async def register(
         user: UserRegister,
         session: AsyncSession = Depends(get_async_session)):
+    """Регистрирует пользователя, присваивая токен."""
     await check_username_exists(session, user.username)
     token = str(uuid4())
     user_data = {"username": user.username, "token": token}
@@ -36,6 +37,8 @@ async def check_imei(
                                             "на /register)"),
         session: AsyncSession = Depends(get_async_session)
 ):
+    """Проверяет валидность imei и token, получает инфо об imei с внешнего
+    API."""
     await check_token_exists(session, token)
     imei = await check_imei_correct(imei)
 
