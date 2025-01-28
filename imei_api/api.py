@@ -53,5 +53,4 @@ async def check_imei(
         "POST",
         url=settings.imei_check_url,
         headers=headers, data=payload)
-    print(response.text)
     return response.json()
