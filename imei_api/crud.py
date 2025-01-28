@@ -12,7 +12,7 @@ class CRUDUser:
         """Инициализация CRUD с указанной моделью."""
         self.model = model
 
-    async def create(self, obj_in: Dict, session: AsyncSession):
+    async def create(self, obj_in: Dict, session: AsyncSession) -> User:
         """Создать новый объект."""
         db_obj = self.model(**obj_in)
         session.add(db_obj)
@@ -20,15 +20,15 @@ class CRUDUser:
         await session.refresh(db_obj)
         return db_obj
 
-    async def get_user_by_name(
-            self, session: AsyncSession, username: str) -> Optional[int]:
+    async def get_user_obj_by_name(
+            self, session: AsyncSession, username: str) -> Optional[User]:
         """Получить объект пользователя по имени."""
         user = await session.execute(
             select(User).where(User.username == username)
         )
         return user.scalars().first()
 
-    async def get_user_by_token(
+    async def get_user_obj_by_token(
             self, session: AsyncSession, token: str) -> Optional[User]:
         """Получить объект пользователя по токену."""
         user = await session.execute(
