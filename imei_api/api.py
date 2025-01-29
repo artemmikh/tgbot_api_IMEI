@@ -94,7 +94,8 @@ async def get_user_by_tg_username(
         session: AsyncSession = Depends(get_async_session)
 ):
     user = await check_tg_username_exists(session, tg_username)
-    return UserRegister(
+    return UserDB(
         username=user.username,
-        tg_username=user.tg_username
+        tg_username=user.tg_username,
+        token=user.token
     )

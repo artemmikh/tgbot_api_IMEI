@@ -1,7 +1,7 @@
 import os
+import re
 
 import requests
-
 from dotenv import load_dotenv
 from requests import Response
 
@@ -14,13 +14,40 @@ def send_message(update, context, message):
     context.bot.send_message(chat.id, message)
 
 
-def check_user_in_whitelist(username: str) -> bool:
-    """Делает запрос к API, возвращает True/False в зависимости от ответа."""
+def check_user_permission(update, context):
+    token: bool = check_user_in_whitelist(update.effective_chat.username)
+    help_message: str = (
+        'У вас нет доступа к боту. Чтобы получить доступ, '
+        'пройдите регистрацию, указав свой телеграм username, на '
+        'http://127.0.0.1:8000/docs#/API/register_api_register_post')
+    if token is None:
+        send_message(update, context, message=help_message)
+    else:
+        return token
+
+
+def check_user_in_whitelist(username: str) -> str:
+    """Возвращает токен пользователя, если пользователь есть в белом списке."""
     response: Response = requests.get(
-        url=os.getenv('IMEI_CHECK_API_URL'),
+        url=os.getenv('API_URL') + os.getenv('USER_CHECK_API_URL'),
         params={'tg_username': username}
     )
     if response.json().get('tg_username') == username:
-        return True
-    else:
-        return False
+        return response.json().get('token')
+
+
+def check_imei_correct(imei: str) -> str:
+    """Убирает пробелы из imei и проверяет, что длина imei равна 15 цифрам."""
+    imei: str = imei.replace(' ', '')
+    if not re.fullmatch(r"\d{15}", imei):
+        return
+    return imei
+
+
+def chek_imei(imei, token):
+    """Делает запрос к API, возвращает информацию об IMEI."""
+    response: Response = requests.post(
+        url=os.getenv('API_URL') + os.getenv('IMEI_CHECK_API_URL'),
+        params={'imei': imei, 'token': token}
+    )
+    return response.json()

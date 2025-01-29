@@ -1,17 +1,29 @@
-from imei_bot.utils import send_message, check_user_in_whitelist
+from imei_bot.utils import send_message, check_imei_correct, chek_imei, \
+    check_user_permission
 
 
 def start_handler(update, context):
     """Обработчик команды /start. Проверяет, есть ли пользователь в
     белом списке. В зависимости от этого отправляет нужное сообщение с
     информацией."""
-    user: bool = check_user_in_whitelist(update.effective_chat.username)
-    hello_message: str = 'Добро пожаловать! Отправьте в чат IMEI для проверки'
-    help_message: str = (
-        'У вас нет доступа к боту. Чтобы получить доступ, '
-        'пройдите регистрацию, указав свой телеграм username, на '
-        'http://127.0.0.1:8000/docs#/API/register_api_register_post')
-    send_message(
-        update,
-        context,
-        message=hello_message if user else help_message)
+    token: bool = check_user_permission(update, context)
+    if token is not None:
+        send_message(
+            update,
+            context,
+            message='Добро пожаловать! Отправьте в чат IMEI для проверки'
+        )
+
+
+def message_handler(update, context):
+    token: str or None = check_user_permission(update, context)
+    if token is None:
+        return
+    imei = check_imei_correct(update.effective_message.text)
+    if imei is None:
+        message = ('Проверьте корректность IMEI. '
+                   'IMEI должен содержать ровно 15 цифр')
+        send_message(update, context, message)
+    else:
+        imei_info = chek_imei(imei, token)
+        send_message(update, context, imei_info)
