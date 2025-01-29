@@ -12,11 +12,11 @@ main_router = APIRouter()
 main_router.include_router(
     api_router,
     prefix='/api',
-    tags=['API']
+    tags=['API'],
 )
 app = FastAPI(
     title=settings.app_title,
-    description=settings.description
+    description=settings.description,
 )
 
 app.include_router(main_router)

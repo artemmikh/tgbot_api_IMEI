@@ -35,6 +35,18 @@ async def check_tg_username_exists(
         session: AsyncSession, username) -> None or HTTPException:
     """Проверяет, существует ли телеграм username в базе."""
     user = await user_crud.get_user_obj_by_tg_username(session, username)
+    if user is None:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail='Пользователя с таким телеграмом не существует!',
+        )
+    return user
+
+
+async def check_tg_username_not_exists(
+        session: AsyncSession, username) -> None or HTTPException:
+    """Проверяет, существует ли телеграм username в базе."""
+    user = await user_crud.get_user_obj_by_tg_username(session, username)
     if user is not None:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,

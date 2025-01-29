@@ -11,7 +11,8 @@ from imei_api.crud import user_crud
 from imei_api.models import User
 from imei_api.schemas import UserRegister, UserDB
 from imei_api.validators import check_username_exists, check_imei_correct, \
-    check_token_exists, check_tg_username_exists, check_username_not_exists
+    check_token_exists, check_tg_username_exists, check_username_not_exists, \
+    check_tg_username_not_exists
 
 router = APIRouter()
 
@@ -28,7 +29,7 @@ async def register(
     """Регистрирует пользователя, присваивая токен."""
     await check_username_not_exists(session, user.username)
     if user.tg_username is not None:
-        await check_tg_username_exists(session, user.tg_username)
+        await check_tg_username_not_exists(session, user.tg_username)
     token = str(uuid4())
     user_data: dict = {
         'username': user.username,
@@ -52,7 +53,7 @@ async def add_tg_username_to_user(
         session: AsyncSession = Depends(get_async_session)
 ):
     user = await check_username_exists(session, username)
-    await check_tg_username_exists(session, tg_username)
+    await check_tg_username_not_exists(session, tg_username)
     user_data: dict = {'tg_username': tg_username}
     return await user_crud.update(user, user_data, session)
 
@@ -85,3 +86,15 @@ async def check_imei(
         url=settings.imei_check_url,
         headers=headers, data=payload)
     return response.json()
+
+
+@router.get('/register')
+async def get_user_by_tg_username(
+        tg_username: str = Query(..., description='Телеграм username'),
+        session: AsyncSession = Depends(get_async_session)
+):
+    user = await check_tg_username_exists(session, tg_username)
+    return UserRegister(
+        username=user.username,
+        tg_username=user.tg_username
+    )
