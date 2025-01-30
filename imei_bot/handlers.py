@@ -1,5 +1,5 @@
 from imei_bot.utils import send_message, check_imei_correct, chek_imei, \
-    check_user_permission
+    check_user_permission, format_imei_info
 
 
 def start_handler(update, context):
@@ -25,4 +25,5 @@ def message_handler(update, context):
         send_message(update, context, message)
     else:
         imei_info = chek_imei(imei, token)
+        imei_info = format_imei_info(imei_info)
         send_message(update, context, imei_info)

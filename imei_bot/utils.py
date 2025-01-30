@@ -4,6 +4,7 @@ import re
 import requests
 from dotenv import load_dotenv
 from requests import Response
+from telegram import ParseMode
 
 load_dotenv()
 
@@ -11,7 +12,7 @@ load_dotenv()
 def send_message(update, context, message):
     """Отправляет сообщение в Telegram чат."""
     chat = update.effective_chat
-    context.bot.send_message(chat.id, message)
+    context.bot.send_message(chat.id, message, parse_mode=ParseMode.MARKDOWN)
 
 
 def check_user_permission(update, context):
@@ -59,6 +60,22 @@ def check_imei_correct(imei: str) -> str:
     if not luhn_check(imei):
         return
     return imei
+
+
+def format_imei_info(data: dict) -> str:
+    """Форматирует ответ API для вывода в Telegram автоматически."""
+    if data.get('status') != 'successful':
+        return 'Ошибка при проверке IMEI.'
+    properties = data.get('properties', {})
+    formatted_lines = [f'📱 *Информация об устройстве*\n']
+
+    for key, value in properties.items():
+        formatted_key = key.replace('_', ' ').capitalize()
+        if isinstance(value, bool):
+            value = 'Да' if value else 'Нет'
+        formatted_lines.append(f'*{formatted_key}:* {value}')
+
+    return '\n'.join(formatted_lines)
 
 
 def chek_imei(imei, token):
