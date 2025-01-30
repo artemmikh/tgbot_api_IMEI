@@ -1,24 +1,29 @@
 import os
 import re
+from typing import Optional
 
 import requests
 from dotenv import load_dotenv
 from requests import Response
-from telegram import ParseMode
+from telegram import ParseMode, Update
+from telegram.ext import CallbackContext
 
 load_dotenv()
 
 
-def send_message(update, context, message):
+def send_message(
+        update: Update, context: CallbackContext, message: str) -> None:
     """Отправляет сообщение в Telegram чат."""
     chat = update.effective_chat
     context.bot.send_message(chat.id, message, parse_mode=ParseMode.MARKDOWN)
 
 
-def check_user_permission(update, context):
+def check_user_permission(
+        update: Update, context: CallbackContext) -> Optional[bool]:
     """В зависимости от ответа API возвращает токен или информацию о
     регистрации."""
-    token: bool = check_user_in_whitelist(update.effective_chat.username)
+    token: Optional[bool] = check_user_in_whitelist(
+        update.effective_chat.username)
     help_message: str = (
         'У вас нет доступа к боту. Чтобы получить доступ, '
         'пройдите регистрацию, указав свой телеграм username, на '
@@ -29,7 +34,7 @@ def check_user_permission(update, context):
         return token
 
 
-def check_user_in_whitelist(username: str) -> str:
+def check_user_in_whitelist(username: str) -> Optional[str]:
     """Возвращает токен пользователя, если пользователь есть в белом списке."""
     response: Response = requests.get(
         url=os.getenv('API_URL') + os.getenv('USER_CHECK_API_URL'),
@@ -37,6 +42,7 @@ def check_user_in_whitelist(username: str) -> str:
     )
     if response.json().get('tg_username') == username:
         return response.json().get('token')
+    return None
 
 
 def luhn_check(imei: str) -> bool:
@@ -54,13 +60,13 @@ def luhn_check(imei: str) -> bool:
     return checksum % 10 == 0
 
 
-def check_imei_correct(imei: str) -> str:
+def check_imei_correct(imei: str) -> Optional[str]:
     """Убирает пробелы из imei и проверяет, что длина imei равна 15 цифрам."""
     imei: str = imei.replace(' ', '')
     if not re.fullmatch(r"\d{15}", imei):
-        return
+        return None
     if not luhn_check(imei):
-        return
+        return None
     return imei
 
 
@@ -80,7 +86,7 @@ def format_imei_info(data: dict) -> str:
     return '\n'.join(formatted_lines)
 
 
-def chek_imei(imei, token):
+def chek_imei(imei: str, token: str) -> dict:
     """Делает запрос к API, возвращает информацию об IMEI."""
     response: Response = requests.post(
         url=os.getenv('API_URL') + os.getenv('IMEI_CHECK_API_URL'),
