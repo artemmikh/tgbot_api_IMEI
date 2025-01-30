@@ -16,6 +16,8 @@ def send_message(update, context, message):
 
 
 def check_user_permission(update, context):
+    """В зависимости от ответа API возвращает токен или информацию о
+    регистрации."""
     token: bool = check_user_in_whitelist(update.effective_chat.username)
     help_message: str = (
         'У вас нет доступа к боту. Чтобы получить доступ, '

@@ -16,6 +16,7 @@ def start_handler(update, context):
 
 
 def message_handler(update, context):
+    """Обработчик входящих сообщений."""
     token: str or None = check_user_permission(update, context)
     if token is None:
         return

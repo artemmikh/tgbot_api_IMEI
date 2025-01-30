@@ -52,6 +52,7 @@ async def add_tg_username_to_user(
         tg_username: str = Query(..., description='Телеграм username'),
         session: AsyncSession = Depends(get_async_session)
 ):
+    """Добавляет телеграм username для зарегистрированного пользователя."""
     user = await check_username_exists(session, username)
     await check_tg_username_not_exists(session, tg_username)
     user_data: dict = {'tg_username': tg_username}
@@ -93,6 +94,7 @@ async def get_user_by_tg_username(
         tg_username: str = Query(..., description='Телеграм username'),
         session: AsyncSession = Depends(get_async_session)
 ):
+    """Возвращает данные о пользователе по token."""
     user = await check_tg_username_exists(session, tg_username)
     return UserDB(
         username=user.username,
