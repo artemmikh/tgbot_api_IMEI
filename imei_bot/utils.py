@@ -36,10 +36,27 @@ def check_user_in_whitelist(username: str) -> str:
         return response.json().get('token')
 
 
+def luhn_check(imei: str) -> bool:
+    """Проверяет IMEI с использованием алгоритма Luhn."""
+    digits = [int(d) for d in imei]
+    checksum = 0
+
+    for i, digit in enumerate(reversed(digits)):
+        if i % 2 == 1:
+            digit *= 2
+            if digit > 9:
+                digit -= 9
+        checksum += digit
+
+    return checksum % 10 == 0
+
+
 def check_imei_correct(imei: str) -> str:
     """Убирает пробелы из imei и проверяет, что длина imei равна 15 цифрам."""
     imei: str = imei.replace(' ', '')
     if not re.fullmatch(r"\d{15}", imei):
+        return
+    if not luhn_check(imei):
         return
     return imei
 

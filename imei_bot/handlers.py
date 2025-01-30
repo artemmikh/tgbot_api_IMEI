@@ -21,8 +21,7 @@ def message_handler(update, context):
         return
     imei = check_imei_correct(update.effective_message.text)
     if imei is None:
-        message = ('Проверьте корректность IMEI. '
-                   'IMEI должен содержать ровно 15 цифр')
+        message = 'Проверьте корректность IMEI.'
         send_message(update, context, message)
     else:
         imei_info = chek_imei(imei, token)
