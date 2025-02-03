@@ -76,8 +76,10 @@ async def check_imei(
         "deviceId": imei,
         "serviceId": settings.imei_check_service_id
     })
+    token_mode = settings.token_api_sandbox if settings.sandbox_mode else (
+        settings.token_api_live)
     headers = {
-        'Authorization': f'Bearer {settings.token_api_sandbox}',
+        'Authorization': f'Bearer {token_mode}',
         'Accept-Language': 'en',
         'Content-Type': 'application/json'
     }

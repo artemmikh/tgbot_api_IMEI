@@ -37,7 +37,10 @@
     DESCRIPTION=<example>
     DATABASE_URL=<example>
     IMEI_CHECK_URL=<example>
+    SANDBOX_MODE=<example>
     ```
+   укажите SANDBOX_MODE=True если хотите отправлять запросы к внешнему api
+   в режиме "песочницы".
 
 ## Telegram-бот
 
