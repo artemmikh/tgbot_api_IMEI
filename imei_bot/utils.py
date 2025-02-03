@@ -15,7 +15,7 @@ def send_message(
         update: Update, context: CallbackContext, message: str) -> None:
     """Отправляет сообщение в Telegram чат."""
     chat = update.effective_chat
-    context.bot.send_message(chat.id, message, parse_mode=ParseMode.MARKDOWN)
+    context.bot.send_message(chat.id, message, )
 
 
 def check_user_permission(
@@ -27,7 +27,7 @@ def check_user_permission(
     help_message: str = (
         'У вас нет доступа к боту. Чтобы получить доступ, '
         'пройдите регистрацию, указав свой телеграм username, на '
-        'http://127.0.0.1:8000/docs#/API/register_api_register_post')
+        '188.120.248.152/docs#/API/register_api_register_post')
     if token is None:
         send_message(update, context, message=help_message)
     else:
@@ -75,13 +75,13 @@ def format_imei_info(data: dict) -> str:
     if data.get('status') != 'successful':
         return 'Ошибка при проверке IMEI.'
     properties = data.get('properties', {})
-    formatted_lines = [f'📱 *Информация об устройстве*\n']
+    formatted_lines = [f'📱 Информация об устройстве\n']
 
     for key, value in properties.items():
         formatted_key = key.replace('_', ' ').capitalize()
         if isinstance(value, bool):
             value = 'Да' if value else 'Нет'
-        formatted_lines.append(f'*{formatted_key}:* {value}')
+        formatted_lines.append(f'{formatted_key}: {value}')
 
     return '\n'.join(formatted_lines)
 
