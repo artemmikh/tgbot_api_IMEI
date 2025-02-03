@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     token_api_live: str = 'example'
     token_api_sandbox: str = 'example'
     imei_check_service_id: int = 12
+    sandbox_mode = True
 
     class Config:
         env_file: str = '.env'
